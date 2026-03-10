@@ -4,9 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 const FINNHUB = 'https://finnhub.io/api/v1';
 function getKey() { return process.env.REACT_APP_FINNHUB_KEY || ''; }
 
-// ── Yahoo Finance — for historical candles (no key needed, CORS via proxy) ─
-// We use allorigins.win as a reliable CORS proxy
-const YF_PROXY = 'https://query1.finance.yahoo.com';
+// ── Yahoo Finance — for historical candles via serverless proxy ─────────────
 
 export const ALL_SYMBOLS = [
   'AAPL', 'NVDA', 'MSFT', 'GOOGL', 'AMZN',
@@ -59,7 +57,6 @@ async function fetchQuote(symbol, key) {
 }
 
 // ── Yahoo Finance: historical candles (free, no key) ──────────────────────
-// Maps our period labels to Yahoo Finance range + interval params
 const YF_PERIOD_MAP = {
   '1W': { range: '5d',  interval: '60m' },
   '1M': { range: '1mo', interval: '1d'  },
@@ -69,28 +66,19 @@ const YF_PERIOD_MAP = {
   '2Y': { range: '2y',  interval: '1wk' },
 };
 
+// Always use our own serverless proxy — works both locally (via CRA proxy) and on Vercel
+function buildYahooUrl(symbol, range, interval) {
+  return `/api/yahoo?symbol=${symbol}&range=${range}&interval=${interval}`;
+}
+
 async function fetchYahooCandles(symbol, period) {
   const cfg = YF_PERIOD_MAP[period] || YF_PERIOD_MAP['3M'];
+  const url  = buildYahooUrl(symbol, cfg.range, cfg.interval);
 
-  // Yahoo Finance v8 chart API — works directly from browser in many cases
-  // If blocked, we try through a public CORS proxy
-  const yfUrl = `${YF_PROXY}/v8/finance/chart/${symbol}?range=${cfg.range}&interval=${cfg.interval}&includePrePost=false`;
-
-  let res;
-  try {
-    // Try direct first
-    res = await fetch(yfUrl, {
-      headers: { 'Accept': 'application/json' },
-    });
-  } catch (_) {
-    // If CORS blocked, try proxy
-    const proxied = `https://corsproxy.io/?${encodeURIComponent(yfUrl)}`;
-    res = await fetch(proxied);
-  }
-
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
   if (!res.ok) throw new Error(`Yahoo Finance returned ${res.status}`);
 
-  const json = await res.json();
+  const json   = await res.json();
   const result = json?.chart?.result?.[0];
   if (!result) throw new Error('No chart data in response');
 

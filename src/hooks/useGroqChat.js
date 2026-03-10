@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL   = 'llama-3.3-70b-versatile';
+const GROQ_MODEL   = 'llama-3.1-8b-instant';
 
 function buildSystemPrompt(quotes) {
   const holdings = [
@@ -95,7 +95,7 @@ export function useGroqChat(quotes) {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
         signal:  abortRef.current.signal,
         body: JSON.stringify({
-          model: GROQ_MODEL, stream: true, max_tokens: 1024, temperature: 0.7,
+          model: GROQ_MODEL, stream: true, max_tokens: 600, temperature: 0.7,
           messages: [
             { role: 'system', content: buildSystemPrompt(quotes) },
             ...history.map(m => ({ role: m.role, content: m.content })),
@@ -110,6 +110,7 @@ export function useGroqChat(quotes) {
 
       const reader  = res.body.getReader();
       const decoder = new TextDecoder();
+      let chunkCount = 0;
 
       loop: while (true) {
         const { done, value } = await reader.read();
@@ -122,12 +123,16 @@ export function useGroqChat(quotes) {
             const delta = JSON.parse(raw).choices?.[0]?.delta?.content;
             if (delta) {
               bufferRef.current += delta;
+              chunkCount++;
               // Write directly to DOM — ZERO React involvement
               if (streamingDomRef.current) {
-                // insertAdjacentText only appends the NEW delta — never rewrites the full string
                 streamingDomRef.current.insertAdjacentText('beforeend', delta);
-                // Auto-scroll (throttled: only every ~5 tokens to avoid layout thrash)
-                if (bufferRef.current.length % 40 < delta.length) {
+                // Yield main thread every 8 chunks to prevent browser freeze
+                if (chunkCount % 8 === 0) {
+                  await new Promise(r => setTimeout(r, 0));
+                }
+                // Auto-scroll throttled
+                if (bufferRef.current.length % 60 < delta.length) {
                   const el = streamingDomRef.current.closest('.aria-msgs-scroll');
                   if (el) el.scrollTop = el.scrollHeight;
                 }
